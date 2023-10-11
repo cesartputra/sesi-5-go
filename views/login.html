@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <form onsubmit="loginUser(event)">
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        <label>Password:</label>
+        <input type="password" name="password" required>
+        <input type="submit" value="Login">
+        <a href="/register">
+            <input type="button" value="Register">
+        </a>
+    </form>
+    <div>
+        {{if .ErrorMessage}}
+        <p>{{.ErrorMessage}}</p>
+        {{end}}
+    </div>
+
+    <div>
+        <h3>Emails:</h3>
+        <ul>
+            {{range $email := .Emails}}
+            <li>{{$email}}</li>
+            {{end}}
+        </ul>
+    </div>
+
+    <script>
+        function loginUser(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert('Login successful!');
+                    window.location.href = '/profile';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to login.');
+            });
+        }
+    </script>
+</body>
+</html>
